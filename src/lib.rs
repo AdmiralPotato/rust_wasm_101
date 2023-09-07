@@ -1,3 +1,4 @@
+use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -28,14 +29,44 @@ pub fn goat_song(count: i32) -> String {
     return result.to_string();
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Serialize)]
+#[wasm_bindgen]
 pub struct Goat {
-    pub name: String,
+    name: String,
     pub power_level: i32,
     pub is_grumpy: bool
 }
+
+#[derive(Debug)]
+#[wasm_bindgen]
+pub struct GoatIterator {
+    goats: Vec<Goat>,
+    index: usize,
+}
+
+#[wasm_bindgen]
+impl GoatIterator {
+    pub fn next_goat(&mut self) -> Option<Goat> {
+        if self.index >= self.goats.len() { None }
+        else {
+            let ret = self.goats[self.index].clone();
+            self.index += 1;
+            Some(ret)
+        }
+    }
+    pub fn has_another_goat(&self) -> bool {
+        self.index < self.goats.len()
+    }
+}
+
+#[wasm_bindgen]
 impl Goat {
-    pub fn parse_log(goat_log: String) -> Vec<Goat> {
+    #[wasm_bindgen(getter)]
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+    fn parse_log_internal(goat_log: String) -> Vec<Goat> {
+        console_error_panic_hook::set_once();
         let mut result = vec!();
         let lines = goat_log.trim().split("\n");
         let mut name_opt: Option<String> = None;
@@ -58,9 +89,9 @@ impl Goat {
                             "false" => Some(false),
                             _ => None
                         },
-                        _ => println!("Invalid key")
+                        _ => println!("Invalid key {key:?}")
                     }
-                    match(&name_opt, &power_level_opt, &is_grumpy_opt) {
+                    match (&name_opt, &power_level_opt, &is_grumpy_opt) {
                         (Some(name), Some(power_level), Some(is_grumpy)) => {
                             println!("Goat is ready!");
                             result.push(Goat{
@@ -80,11 +111,15 @@ impl Goat {
         }
         result
     }
-}
-
-#[wasm_bindgen]
-pub fn parse_goat_log(goat_log: String) -> String {
-    // TODO: Return Vec<Goat>
-    let result = Goat::parse_log(goat_log);
-    format!("Debug! {result:?}")
+    pub fn parse_log_as_iter(goat_log: String) -> GoatIterator {
+        let result = Self::parse_log_internal(goat_log);
+        GoatIterator {
+            goats: result,
+            index: 0,
+        }
+    }
+    pub fn parse_log_as_json(goat_log: String) -> String {
+        let result = Self::parse_log_internal(goat_log);
+        serde_json::to_string(&result).unwrap()
+    }
 }

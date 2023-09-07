@@ -2,7 +2,7 @@ import init, {
   add,
   div,
   goat_song,
-  parse_goat_log
+  Goat
 } from './pkg/rust_wasm_101.js';
 
 await init();
@@ -30,7 +30,7 @@ power_level: 100
 is_grumpy: true
 `;
 
-const parsedGoats = parse_goat_log(goatLog);
+const parsedGoats = JSON.parse(Goat.parse_log_as_json(goatLog));
 console.log('What is parsedGoats?', parsedGoats);
 
 
@@ -52,5 +52,5 @@ name: Flower
 is_grumpy: false
 `;
 
-const parsedSillyGoats = parse_goat_log(sillyGoatLog);
+const parsedSillyGoats = JSON.parse(Goat.parse_log_as_json(sillyGoatLog));
 console.log('What is parsedSillyGoats?', parsedSillyGoats);
