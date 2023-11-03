@@ -123,3 +123,34 @@ impl Goat {
         serde_json::to_string(&result).unwrap()
     }
 }
+
+#[derive(Serialize)]
+#[wasm_bindgen]
+struct SuperGoat {
+    id: String,
+    super_powers: Vec<String>,
+    secret_identity: Goat
+}
+
+#[wasm_bindgen]
+impl SuperGoat {
+    pub fn new () -> SuperGoat {
+        SuperGoat{
+            id: "12345".to_string(),
+            super_powers: vec![
+                "Flying".to_string(),
+                "Falling with style".to_string(),
+                "Fainting".to_string(),
+            ],
+            secret_identity: Goat{
+                name: "Yolo The Goat".to_string(),
+                power_level: 400,
+                is_grumpy: true,
+            }
+        }
+    }
+    #[wasm_bindgen]
+    pub fn stringify(&self) -> String {
+        serde_json::to_string(&self).unwrap()
+    }
+}

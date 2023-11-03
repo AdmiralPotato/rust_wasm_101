@@ -2,7 +2,8 @@ import init, {
   add,
   div,
   goat_song,
-  Goat
+  Goat,
+  SuperGoat,
 } from './pkg/rust_wasm_101.js';
 
 await init();
@@ -54,3 +55,6 @@ is_grumpy: false
 
 const parsedSillyGoats = JSON.parse(Goat.parse_log_as_json(sillyGoatLog));
 console.log('What is parsedSillyGoats?', parsedSillyGoats);
+
+const superGoat = SuperGoat.new();
+console.log('What is superGoat?', superGoat.stringify());
